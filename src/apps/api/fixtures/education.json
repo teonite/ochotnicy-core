@@ -1,0 +1,27 @@
+[
+  {
+    "pk": 1,
+    "model": "api.education",
+    "fields": {"name": "Ucz\u0119 si\u0119"}
+  },
+  {
+    "pk": 2,
+    "model": "api.education",
+    "fields": {"name": "Studiuj\u0119"}
+  },
+  {
+    "pk": 3,
+    "model": "api.education",
+    "fields": {"name": "Pracuj\u0119"}
+  },
+  {
+    "pk": 4,
+    "model": "api.education",
+    "fields": {"name": "Obecnie nie pracuj\u0119"}
+  },
+  {
+    "pk": 5,
+    "model": "api.education",
+    "fields": {"name": "Ciesz\u0119 si\u0119 emerytur\u0105"}
+  }
+]

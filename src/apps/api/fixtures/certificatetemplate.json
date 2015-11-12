@@ -1,0 +1,1 @@
+[{"pk": 1, "model": "api.certificatetemplate", "fields": {"body": "{{ nazwisko_wolontariusza }}", "organization": null, "is_general": true, "offer": null}}]

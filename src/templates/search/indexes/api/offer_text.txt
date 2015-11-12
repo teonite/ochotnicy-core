@@ -1,0 +1,2 @@
+{{ object.title }}
+{{ object.publishing_organization.fullname }}

@@ -1,0 +1,65 @@
+[
+    {
+        "pk": 1,
+        "model": "api.category",
+        "fields": {
+            "name": "Kultura"
+        }
+    },
+    {
+        "pk": 2,
+        "model": "api.category",
+        "fields": {
+            "name": "Sport"
+        }
+    },
+    {
+        "pk": 3,
+        "model": "api.category",
+        "fields": {
+            "name": "Edukacja"
+        }
+    },
+    {
+        "pk": 4,
+        "model": "api.category",
+        "fields": {
+            "name": "Ekologia"
+        }
+    },
+    {
+        "pk": 5,
+        "model": "api.category",
+        "fields": {
+            "name": "Prawa cz\u0142owieka"
+        }
+    },
+    {
+        "pk": 6,
+        "model": "api.category",
+        "fields": {
+            "name": "Pomoc spo\u0142eczna"
+        }
+    },
+    {
+        "pk": 7,
+        "model": "api.category",
+        "fields": {
+            "name": "Zwierz\u0119ta"
+        }
+    },
+    {
+        "pk": 8,
+        "model": "api.category",
+        "fields": {
+            "name": "Przestrze\u0144 miejska"
+        }
+    },
+    {
+        "pk": 9,
+        "model": "api.category",
+        "fields": {
+            "name": "Inne"
+        }
+    }
+]

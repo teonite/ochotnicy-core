@@ -1,0 +1,16 @@
+bin
+include
+lib
+local
+.idea
+src/conf/*-localsettings.py
+src/conf/localsettings.py
+*.pyc
+dev.db
+logs/
+src/media/*
+src/*.pid
+src/*.log
+src/celerybeat-schedule
+djcelery
+share

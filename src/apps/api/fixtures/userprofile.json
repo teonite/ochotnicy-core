@@ -1,0 +1,10 @@
+[
+  {
+    "pk": 2,
+    "model": "api.userprofile",
+    "fields": {
+      "user": 1,
+      "organization_member": null
+    }
+  }
+]

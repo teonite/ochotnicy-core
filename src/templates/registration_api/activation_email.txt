@@ -1,0 +1,18 @@
+Witaj {{ name }},
+
+Dziękujemy za rejestrację na portalu {{ instance_name }}.
+
+Prosimy o kliknięcie w poniższy link celem potwierdzenia adresu e-mail.
+{{ instance_url }}/activation/{{ activation_key }}
+
+Pozdrawiamy
+Zespół portalu {{ instance_name }}
+{{ contact_email }}
+
+----
+
+Jeżeli nie rejestrowałeś się na stronie http://{{ instance_url }}, zignoruj proszę niniejszą wiadomość. Prawdopodobnie ktoś pomylił się wpisując swój adres e-mail.
+
+Wiadomość wysłana automatycznie przez portal ochotnicy - http://{{instance_url}}
+Copyright (C) Pracownia badań i innowacji społecznych Stocznia http://stocznia.org.pl
+Development & Hosting -  TEONITE http://teonite.com

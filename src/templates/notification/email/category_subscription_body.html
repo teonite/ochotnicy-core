@@ -1,0 +1,22 @@
+Witaj {{ first_name }}
+
+Zgodnie z Twoją subskrypcją informujemy Ciebie o nowych ofertach, które pojawiły się w tym tygodniu:
+
+{% for category in categories %}
+* Oferty w {{ category.category }}:
+
+{% for offer in category.offers %}
+1. {{ offer.title }} (oferta ważna do: {{ offer.publish_to }}) - {{ instance_url }}api/offers/{{ offer.id }}
+{% endfor %}
+
+{% endfor %}
+
+Jeżeli chciałbyś zrezygnować z subskrypcji, kliknij w poniższy link:
+
+{{ instance_url }}api/category-subscriptions/my DELETE
+
+Pozdrawiamy!
+--
+Mail został wysłany automatycznie z portalu XYZ
+Copyright (C) 2014 Pracownia badań i innowacji społecznych Stocznia
+Development - TEONITE - http://teonite.com

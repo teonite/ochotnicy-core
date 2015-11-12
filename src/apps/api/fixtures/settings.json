@@ -1,0 +1,18 @@
+[
+  {
+    "pk": 1,
+    "model": "api.settings",
+    "fields": {
+      "settings": {
+        "main_page_promoted": "true",
+        "category_subscription_interval": "7",
+        "category_subscription_treshold": "17",
+        "main_page_projects": "3",
+        "instance_name": "Warszawscy",
+        "rating_treshold": "5",
+        "instance_url": "http://ochotnicy.pl/",
+        "contact_email": "ochotnicy@stocznia.pl"
+      }
+    }
+  }
+]

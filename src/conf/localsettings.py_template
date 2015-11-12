@@ -1,0 +1,90 @@
+# -*- coding: utf-8 -*-
+
+#
+# Portal Ochotnicy - http://ochotnicy.pl
+#
+# Copyright (C) Pracownia badań i innowacji społecznych Stocznia
+#
+# Development: TEONITE - http://teonite.com
+#
+
+"""
+local settings for development environment
+Imports and extends base_settings
+Use this file as config for your server
+"""
+
+import sys
+
+try:
+    from base_settings import *
+except ImportError:
+    print 'FATAL: Cannot find base configuration file'
+    sys.exit()
+
+DEBUG = True
+TEMPLATE_DEBUG = DEBUG
+
+# email backend config
+SYSTEM_MAIL = 'Example <example@example.com>'
+EMAIL_HOST = 'example.com'
+EMAIL_HOST_USER = 'example@example.com'
+EMAIL_HOST_PASSWORD = 'example#password'
+
+ADMINS = (
+    ('ADMIN_NAME', 'example@example.com'),
+)
+
+MANAGERS = ADMINS
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'dev.db',          # Or path to database file if using sqlite3.
+        'USER': '',                      # Not used with sqlite3.
+        'PASSWORD': '',                  # Not used with sqlite3.
+        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+    }
+}
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': 'http://127.0.0.1:9200/',
+        'INDEX_NAME': 'ochotnicy',
+    },
+}
+
+# add dev apps to INSTALLED_APPS
+INSTALLED_APPS = tuple(list(INSTALLED_APPS) + [
+    'devserver', 
+    'django_extensions'
+])
+
+# Make this unique, and don't share it with anybody.
+SECRET_KEY = 'This needs to be unpredictable. Unicorn. Unicorn of entropy!'
+
+# Local time zone for this installation. Choices can be found here:
+# http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
+# although not all choices may be available on all operating systems.
+# On Unix systems, a value of None will cause Django to use the same
+# timezone as the operating system.
+# If running in a Windows environment this must be set to the same as your
+# system time zone.
+TIME_ZONE = 'Europe/Warsaw'
+
+# Language code for this installation. All choices can be found here:
+# http://www.i18nguy.com/unicode/language-identifiers.html
+LANGUAGE_CODE = 'pl-pl'
+
+# URL prefix for static files.
+# Example: "http://media.lawrence.com/static/"
+STATIC_URL = '/static/'
+
+# Sentry configuration
+RAVEN_CONFIG = {
+    'dsn': ''
+}
+
+BACKEND_VERSION="0.9.1-{{build}}"

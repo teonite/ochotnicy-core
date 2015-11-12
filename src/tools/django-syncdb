@@ -1,0 +1,132 @@
+#!/bin/bash
+#
+# Copyright 2011-2014 (C) TEONITE - http://teonite.com
+#
+# Author: Robert Olejnik <robert@teonite.com>
+#
+# Description:
+#
+#  This is a wrapper creating Django project database and filling it with default data,
+#  used mostly by package tools (.deb creating tools) or Docker container tools
+#
+
+# CONFIUGRATION SECTION {{{
+BASENAME=`basename $0`
+ABSOLUTE_PATH=$(cd `dirname "${BASH_SOURCE[0]}"` && pwd)
+ROOT_DIR=`dirname "${ABSOLUTE_PATH}"`
+CFG_VERSION="1.1"
+CFG_VERBOSE=1
+CFG_DEBUG=0
+CFG_UPGRADE=0
+CFG_LOG_FILE="${ROOT_DIR}/logs/${BASENAME}.log"
+CFG_MANAGE="python ./tools/manage.py"
+
+if [ -f "./teonite-bash-commons.sh" ]; then
+	source "./teonite-bash-commons.sh"
+elif [ -f "$ROOT_DIR/tools/teonite-bash-commons.sh" ]; then
+    source "$ROOT_DIR/tools/teonite-bash-commons.sh"
+elif [ -f "./tools/teonite-bash-commons.sh" ]; then
+	source "./tools/teonite-bash-commons.sh"
+else
+	echo "ERROR: couldn't locate teonite-bash-commons.sh"
+	exit 1
+fi
+# end: configuration section }}}
+
+# FUNCTION DEFINITION {{{
+# print usage message
+function usage
+{
+    print_header
+    echo
+    echo -e "Usage: $BASENAME -p process_name -r command_to_run [options]"
+    echo -e
+    echo -e 'Available options:'
+    echo -e
+    echo -e "\t-d            print debug messages"
+    echo -e "\t-h            this help message"
+    echo -e "\t-l logfile    print log messages to 'logfile' (default: $CFG_LOG_FILE)"
+    echo -e "\t-u            upgrade mode, do not load default data"
+    echo -e "\t-w directory  set OMNI WebPanel directory"
+    echo -e "\t-v            be verbose"
+    echo -e
+    exit 2
+}
+# end: function definition }}}
+
+# GET OPTIONS {{{
+GETOPTARGS=`getopt hvdl:uw: $*`
+
+if [ $? != 0 ]; then
+    usage
+fi
+
+set -- $GETOPTARGS
+
+for i
+do
+    case "$i"
+        in
+
+        -v)
+            CFG_VERBOSE=1
+            logdebug "Verbose mode on"
+            shift;;
+        -d)
+            CFG_DEBUG=1
+            logdebug "Will show debug messages"
+            shift;;
+        -h)
+            usage
+            shift;;
+        -l)
+            CFG_LOG_FILE=$2; shift;
+            logdebug "Using '$CFG_LOG_FILE' as logfile"
+            shift;;
+        -u)
+            CFG_UPGRADE=1
+            logdebug "Upgrade mode, will not load default data"
+            shift;;
+        -w)
+            OMNI_WEBPANEL=$2; shift;
+            export OMNI_WEBPANEL
+            logdebug "Using '${OMNI_WEBPANEL}' as OMNI WebPanel directory"
+            shift;;
+        --)
+        shift; break;;
+    esac
+done
+
+# end: get options }}}
+
+loginfo "`print_header`"
+
+loginfo "Syncing database:"
+loginfo "All real database operations are logged to: ${CFG_LOG_FILE}"
+run_cmd "Doing initial database sync..." "${CFG_MANAGE} syncdb --noinput"
+if [ $? -ne 0 ]; then
+	error_msg
+	logerror "Please correct all errors and run: $0 again."
+	exit 1
+fi
+
+if [ ${CFG_UPGRADE} -eq 1 ]; then
+	loginfo "Executing database upgrade..."
+	log_then_run "${CFG_MANAGE} migrate --no-initial-data"
+	if [ $? -ne 0 ]; then
+		error_msg
+		logerror "Please correct all errors and run: '$0 -u' again."
+		exit 3
+	fi
+else
+	loginfo "Executing initial database migrations..."
+	log_then_run "${CFG_MANAGE} migrate"
+	if [ $? -ne 0 ]; then
+		error_msg
+		logerror "Please correct all errors and run: $0 again."
+		exit 4
+	fi
+fi
+
+loginfo "Database migrations finished."
+

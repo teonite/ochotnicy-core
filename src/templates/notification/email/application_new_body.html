@@ -1,0 +1,26 @@
+Witaj {{ first_name }} {{ last_name }},
+
+Na Państwa ofertę wolontariatu {{ offer_title }} http://{{ instance_url }}/offer/{{ offer_id }} przesłano zgłoszenie.
+
+Dane ochotnika:
+Imię i nazwisko: {{ volunteer_first_name }} {{ volunteer_last_name }}
+E-mail: {{ volunteer_email }}
+Wiek: {{ volunteer_age }}
+Numer telefonu: {{ volunteer_phone_number }}
+O mnie: {{ volunteer_about }}
+Umiejętności:
+{% for ability in volunteer_abilities %}
+- {{ ability }}
+{% endfor %}
+Link: http://{{ instance_url }}/volunteer/{{ volunteer_id }}
+
+Przypominamy, że należy odpowiedzieć ochotnikowi w ciągu 7 dni na przesłane zgłoszenie.
+
+Pozdrawiamy
+Zespół portalu {{ instance_name }}
+{{ contact_email }}
+
+--
+Wiadomość wysłana automatycznie przez portal ochotnicy - http://{{instance_url}}
+Copyright (C) Pracownia badań i innowacji społecznych Stocznia http://stocznia.org.pl
+Development & Hosting -  TEONITE http://teonite.com

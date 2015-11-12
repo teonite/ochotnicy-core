@@ -1,0 +1,37 @@
+@page {
+    size: a4 portrait;
+    margin: 25mm 10mm 25mm 10mm;
+    counter-increment: page;
+}
+#header {
+    position: fixed;
+    bottom: 100%;
+    left: 0;
+    width: 100%;
+}
+#footer {
+    position: fixed;
+    top: 100%;
+    margin-top: 0.3cm;
+    left: 0;
+    width: 100%;
+}
+.right_image_footer {
+    height: 1.5cm;
+    float: right;
+    margin-right: 0.5cm;
+}
+.left_image_footer {
+    height: 1.5cm;
+    float: left;
+    margin-left: 0.5cm;
+}
+.left_image_header {
+    height: 1.5cm;
+    margin-left: 0.5cm;
+}
+.footer-text {
+    font-size: 9px;
+    color: grey;
+    text-align: center;
+}

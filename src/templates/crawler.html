@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <title>{{ title }} - Ochotnicy {{ instanceName }}</title>
+
+        <!-- Facebook, Pinterest, Google Plus and others make use of open graph metadata -->
+        <meta property="og:title" content="{{ title }} - Ochotnicy {{ instanceName }}" />
+        <meta property="og:description" content="{{ description }}" />
+        <meta property="og:image" content="{{ imgUrl }}" />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="Ochotnicy {{ instanceName }}" />
+        <meta property="og:url" content="{{ siteUrl }}" />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="{{ title }} - Ochotnicy {{ instanceName }}" />
+        <meta name="twitter:description" content="{{ description }}" />
+        <meta name="twitter:image" content="{{ imgUrl }}" />
+        <meta name="twitter:url" content="{{ siteUrl }}" />
+    </head>
+    <body>
+    <p>{{ description }}</p>
+    <img src="{{ imgUrl }}">
+    </body>
+    </html>

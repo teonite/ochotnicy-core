@@ -1,0 +1,2203 @@
+  swagger: '2.0'
+
+  info:
+    version: "1.0.0"
+    title: Ochotnicy
+
+  paths:
+    /v1/api/organizations/{id}:
+      get:
+        description: |
+          Gets organization data for given id.
+        parameters:
+          - name: id
+            type: integer
+            in: path
+            required: true
+            description: Organization id. Pass 'my' to get output for logged user.
+        responses:
+          200:
+            description: Successful response
+            schema:
+              $ref: '#/definitions/OrganizationReadable'
+          310:
+            description: Organization or volunteer profile not created yet
+            schema:
+              $ref: '#/definitions/OrganizationReadable'
+      patch:
+        description: |
+          Updates organization data for given id. Pass only one body-parameter from listed depending on which fields you
+          want to update.
+        parameters:
+          - name: id
+            type: integer
+            in: path
+            required: true
+            description: Organization id. Pass 'my' to get output for logged user.
+          - name: data
+            in: body
+            description: organization data
+            required: true
+            schema:
+              $ref: '#/definitions/OrganizationUpdateDataChange'
+          - name: status
+            in: body
+            description: organization status
+            required: true
+            schema:
+              $ref: '#/definitions/OrganizationUpdateStatusChange'
+          - name: autoskip permission
+            in: body
+            description: Set on/off autoskip permission
+            required: true
+            schema:
+              $ref: '#/definitions/VolunteerAutoskip'
+        responses:
+          200:
+            description: Updated
+          310:
+            description: Updated, but organization or volunteer profile not created yet
+          400:
+            description: Bad request or validation error
+          403:
+            description: Forbidden. Bad credentials.
+      delete:
+        description: |
+          Deactivates organization for given id. Alias for changing organization's 'is_active' to False. Pass empty body.
+        parameters:
+          - name: id
+            type: integer
+            in: path
+            required: true
+            description: Organization id. Pass 'my' to get output for logged user.
+        responses:
+          201:
+            description: Deactivated
+          310:
+            description: Deactivated, but organization or volunteer profile not created yet
+          400:
+            description: Bad request or validation error
+          403:
+            description: Forbidden. Bad credentials.
+    /v1/api/organizations:
+      post:
+        description: |
+          Creates organization profile for logged user
+        parameters:
+          - name: data
+            in: body
+            description: organization data
+            schema:
+              $ref: '#/definitions/OrganizationWritable'
+        responses:
+          200:
+            description: Successful response
+          400:
+            description: Bad request
+          403:
+            description: Forbidden. You already have an organziation profile.
+      get:
+        description: |
+          Gets organization list
+        parameters:
+          - name: fullname
+            in: query
+            description: Filter organizations by name. For more filters, use comma-separated format
+            type: string
+        responses:
+          200:
+            description: Successful response
+            schema:
+              $ref: '#/definitions/OrganizationList'
+          310:
+            description: Organization or volunteer profile not created yet
+            schema:
+              $ref: '#/definitions/OrganizationList'
+          403:
+            description: Forbidden
+    /v1/api/agreement-tasks:
+      post:
+        description: |
+          Create this resource to define tasks for given offer or for given both offer and volunteer
+        parameters:
+          - name: data
+            in: body
+            required: true
+            description: data
+            schema:
+              $ref: '#/definitions/AgreementTaskWritable'
+        responses:
+          201:
+            description: Created
+          310:
+            description: Organization or volunteer profile not created
+          400:
+            description: Bad request
+          404:
+            description: Given offer or volunteer doesn't exist
+    /v1/api/agreements:
+      post:
+        description: |
+          Generates multiple agreements in zip archive
+        parameters:
+          - name: parameters
+            in: body
+            required: true
+            description: which agreements involve? Pass volunteer ids to narrow agreement range or miss this field to generate for all the volunteers
+            schema:
+              $ref: '#/definitions/AgreementZipRequest'
+        responses:
+          200:
+            description: Success
+            schema:
+              $ref: '#/definitions/AgreementZip'
+          310:
+            description: Organization or volunteer profile not created
+            schema:
+              $ref: '#/definitions/AgreementZip'
+          403:
+            description: Forbidden
+          404:
+            description: Given offer or volunteer doesn't exist
+    /v1/api/agreements/offer/{offer_id}/volunteer/{volunteer_id}:
+      get:
+        description: |
+          Gets information about generated agreement
+        parameters:
+          - name: offer_id
+            in: path
+            required: true
+            description: offer id
+            type: integer
+          - name: volunteer_id
+            in: path
+            required: true
+            description: volunteer id
+            type: integer
+        responses:
+          200:
+            description: Successful response
+            schema:
+              $ref: '#/definitions/AgreementWritable'
+          310:
+            description: Organization or volunteer profile not created yet
+            schema:
+              $ref: '#/definitions/AgreementWritable'
+          403:
+            description: Forbidden
+          404:
+            description: Not found
+      post:
+        description: |
+          Generates an agreement for given offer and volunteer
+        parameters:
+          - name: offer_id
+            in: path
+            required: true
+            description: offer id
+            type: integer
+          - name: volunteer_id
+            in: path
+            required: true
+            description: volunteer id
+            type: integer
+        responses:
+          201:
+            description: Created
+            schema:
+              $ref: '#/definitions/AgreementWritable'
+          310:
+            description: Organization or volunteer profile not created
+            schema:
+              $ref: '#/definitions/AgreementWritable'
+          403:
+            description: Forbidden
+          404:
+            description: Given offer or volunteer doesn't exist
+      patch:
+        description: |
+          Regenerates an agreement for given offer and volunteer
+        parameters:
+          - name: offer_id
+            in: path
+            required: true
+            description: offer id
+            type: integer
+          - name: volunteer_id
+            in: path
+            required: true
+            description: volunteer id
+            type: integer
+        responses:
+          201:
+            description: Created
+            schema:
+              $ref: '#/definitions/AgreementWritable'
+          310:
+            description: Organization or volunteer profile not created
+            schema:
+              $ref: '#/definitions/AgreementWritable'
+          400:
+            description: Bad request
+          403:
+            description: Forbidden
+          404:
+            description: Given offer or volunteer doesn't exist
+    /v1/api/agreement-templates:
+      post:
+        description: |
+          Generates an agreement template
+        parameters:
+          - name: data
+            in: body
+            required: true
+            description: data
+            schema:
+              $ref: '#/definitions/AgreementTemplate'
+        responses:
+          201:
+            description: Created
+          310:
+            description: Created but organization or volunteer profile not created
+          400:
+            description: Bad request
+          403:
+            description: Forbidden
+      patch:
+        description: |
+          Updates an agreement template
+        parameters:
+          - name: data
+            in: body
+            required: true
+            description: data
+            schema:
+              $ref: '#/definitions/AgreementTemplate'
+        responses:
+          200:
+            description: Updated
+          310:
+            description: Updated but organization or volunteer profile not created
+          400:
+            description: Bad request
+          403:
+            description: Forbidden
+          404:
+            description: Not found
+    /v1/api/organizations/{id}/offers:
+      get:
+        description: |
+          Lists all offers for organization for given id.
+        parameters:
+          - name: id
+            type: integer
+            in: path
+            required: true
+            description: Organization id. Pass 'my' to get output for logged user.
+          - name: status
+            type: integer
+            in: query
+            required: false
+            description: Pass status id to filter applications. For several filters use comma-separated format
+        responses:
+          200:
+            description: Successful response
+            schema:
+              $ref: '#/definitions/OrganizationOffers'
+          310:
+            description: Organization or volunteer profile not created
+            schema:
+              $ref: '#/definitions/OrganizationOffers'
+    /v1/api/offers/{id}/applications/{state}:
+      get:
+        description: |
+          Gets list of application for given offer and state
+        parameters:
+          - name: id
+            type: integer
+            in: path
+            required: true
+            description: Offer id.
+          - name: state
+            type: string
+            in: path
+            required: true
+            description: "One of following states: pending, accepted, rejected"
+        responses:
+          200:
+            description: Success
+            schema:
+              $ref: '#/definitions/ApplicationForOfferReadable'
+          400:
+            description: Bad request
+    /v1/api/offers/{id}/applications:
+      post:
+        description: |
+          Create this resource to apply to an offer identified by given id. Pass empty body.
+        parameters:
+          - name: id
+            type: integer
+            in: path
+            required: true
+            description: Offer id.
+        responses:
+          201:
+            description: Created
+            schema:
+              $ref: '#/definitions/ApplicationWritable'
+          310:
+            description: Organization or volunteer profile not created
+            schema:
+              $ref: '#/definitions/ApplicationWritable'
+          400:
+            description: Bad request
+          403:
+            description: Forbidden. You already have an organziation profile.
+          440:
+            description: Volunteer profile not extended
+    /v1/api/applications/offer/{offer_id}/volunteer/{volunteer_id}:
+      get:
+        description: |
+          Gets status and message for application for given volunteer and offer id
+        parameters:
+          - name: offer_id
+            type: integer
+            in: path
+            required: true
+            description: offer_id
+          - name: volunteer_id
+            type: integer
+            in: path
+            required: true
+            description: volunteer_id
+        responses:
+          200:
+            description: Success
+            schema:
+              $ref: '#/definitions/ApplicationReadable'
+          404:
+            description: Not found
+    /v1/api/applications:
+      patch:
+        description: |
+          Updates application status for given ids
+        parameters:
+          - name: data
+            in: body
+            description: application data
+            required: true
+            schema:
+              $ref: '#/definitions/ApplicationStatusChange'
+        responses:
+          200:
+            description: Updated
+            schema:
+              $ref: '#/definitions/ApplicationStatusChangeResponse'
+          409:
+            description: At least one of application status change failed
+    /v1/api/offers-bulk:
+      patch:
+        description: |
+          Updates offer status for given ids
+        parameters:
+          - name: status
+            in: body
+            description: offer status
+            required: true
+            schema:
+              $ref: '#/definitions/OfferBulkStatusChange'
+        responses:
+          200:
+            description: Updated
+            schema:
+              $ref: '#/definitions/OfferBulkStatusChangeResponse'
+          409:
+            description: At least one of application status change failed
+    /v1/api/volunteers/{id}/applications:
+      get:
+        description: |
+          Lists all applications for volunteer for given id.
+        parameters:
+          - name: id
+            type: integer
+            in: path
+            required: true
+            description: Volunteer id. Pass 'my' to get output for logged user.
+          - name: status
+            type: integer
+            in: query
+            required: false
+            description: Pass status id to filter applications. For several filters use comma-separated format
+        responses:
+          200:
+            description: Successful response
+            schema:
+              $ref: '#/definitions/VolunteerApplications'
+          310:
+            description: Organization or volunteer profile not created
+            schema:
+              $ref: '#/definitions/VolunteerApplications'
+          404:
+            description: Forbidden. Given volunteer id doesn't exist.
+    /v1/api/volunteers/{id}/abilities:
+      get:
+        description: |
+          Lists all abilities that volunteer has choosen and those which hasn't as well.
+        parameters:
+          - name: id
+            type: integer
+            in: path
+            required: true
+            description: Volunteer id. Pass 'my' to get output for logged user.
+        responses:
+          200:
+            description: Successful response
+            schema:
+              $ref: '#/definitions/VolunteerAbilities'
+          404:
+            description: Not found. Given volunteer id doesn't exist.
+    /v1/api/volunteers/{id}/ratings:
+      get:
+        description: |
+          Lists all ratings for given volunteer id
+        parameters:
+          - name: id
+            type: integer
+            in: path
+            required: true
+            description: Volunteer id. Pass 'my' to get output for logged user.
+        responses:
+          200:
+            description: Successful response
+            schema:
+              $ref: '#/definitions/RatingReadable'
+          404:
+            description: Not found. Given volunteer id doesn't exist.
+    /v1/api/volunteers:
+      post:
+        description: |
+          Creates volunteer profile for logged user.
+        parameters:
+          - name: data
+            in: body
+            required: true
+            description: volunteer data
+            schema:
+              $ref: '#/definitions/VolunteerPrimaryWritable'
+        responses:
+          200:
+            description: Successful response
+          403:
+            description: Forbidden. You have to be older than 13 and not have volunteer profile yet.
+      get:
+        description: |
+          Gets volunteer list
+        responses:
+          200:
+            description: Successful response
+            schema:
+              $ref: '#/definitions/VolunteerList'
+          310:
+            description: Organization or volunteer profile not created yet
+            schema:
+              $ref: '#/definitions/VolunteerList'
+          403:
+            description: Forbidden
+    /v1/api/volunteers/{id}:
+      get:
+        description: |
+          Gets volunteer's data for given id.
+        parameters:
+          - name: id
+            type: integer
+            in: path
+            required: true
+            description: Volunteer id. Pass 'my' to get output for logged user.
+        responses:
+          200:
+            description: Successful response
+            schema:
+              $ref: '#/definitions/VolunteerReadable'
+          310:
+            description: Organization or volunteer profile not created yet
+            schema:
+              $ref: '#/definitions/VolunteerReadable'
+          404:
+            description: Not found
+      patch:
+        description: |
+          Updates volunteer profile for given id.
+        parameters:
+          - name: id
+            type: integer
+            in: path
+            required: true
+            description: Volunteer id. Pass 'my' to get output for logged user
+          - name: primary data
+            in: body
+            description: volunteer primary data
+            required: true
+            schema:
+              $ref: '#/definitions/VolunteerPrimaryWritable'
+          - name: extended data
+            in: body
+            description: volunteer extended data
+            required: true
+            schema:
+              $ref: '#/definitions/VolunteerExtendedWritable'
+        responses:
+          200:
+            description: Updated
+          310:
+            description: Updated, but organization or volunteer profile not created yet
+          400:
+            description: Bad request or validation error
+          403:
+            description: Forbidden. Bad credentials.
+          404:
+            description: Not found
+    /v1/api/news:
+      post:
+        description: |
+          Creates news
+        parameters:
+          - name: data
+            in: body
+            description: data
+            required: true
+            schema:
+              $ref: '#/definitions/NewsWritable'
+        responses:
+          201:
+            description: Created
+          310:
+            description: Created, but organization or volunteer profile not created yet
+          403:
+            description: Forbidden. Bad credentials.
+      get:
+        description: |
+          Lists all news
+        responses:
+          200:
+            description: Successful response
+            schema:
+              $ref: '#/definitions/NewsReadable'
+          310:
+            description: Organization or volunteer profile not created
+            schema:
+              $ref: '#/definitions/NewsReadable'
+    /v1/api/news/{id}:
+      patch:
+        description: |
+          Updates news for given id.
+        parameters:
+          - name: id
+            type: integer
+            in: path
+            required: true
+            description: News id.
+          - name: data
+            in: body
+            description: data
+            required: true
+            schema:
+              $ref: '#/definitions/NewsWritable'
+        responses:
+          200:
+            description: Updated
+          310:
+            description: Updated, but organization or volunteer profile not created yet
+          403:
+            description: Forbidden. Bad credentials.
+          404:
+            description: Not found
+    /v1/api/volunteers/{id}/thumbnail:
+      post:
+        description: |
+          Uploads image for volunteer for given id. Saves original image and creates a thumbnail.
+        parameters:
+          - name: id
+            in: path
+            description: Volunteer id. Pass 'my' to send thumbnail to your volunteer profile.
+            required: true
+            type: integer
+          - name: data
+            in: body
+            required: true
+            description: Thumbnail data. Upload file to 'filename' parameter.
+            schema:
+              $ref: '#/definitions/ThumbnailWritable'
+        responses:
+          201:
+            description: Created
+            schema:
+              $ref: '#/definitions/VolunteerThumbnailSet'
+          310:
+            description: Updated, but organization or volunteer profile not created yet
+            schema:
+              $ref: '#/definitions/VolunteerThumbnailSet'
+          400:
+            description: Validation error
+    /v1/api/organizations/{id}/thumbnail:
+      post:
+        description: |
+          Uploads image for organization for given id. Saves original image and creates a thumbnail.
+        parameters:
+          - name: id
+            in: path
+            description: Organization id. Pass 'my' to send thumbnail to your organization profile.
+            required: true
+            type: integer
+          - name: data
+            in: body
+            required: true
+            description: Thumbnail data. Upload file to 'filename' parameter.
+            schema:
+              $ref: '#/definitions/ThumbnailWritable'
+        responses:
+          201:
+            description: Created
+            schema:
+              $ref: '#/definitions/OrganizationThumbnailSet'
+          310:
+            description: Updated, but organization or volunteer profile not created yet
+            schema:
+              $ref: '#/definitions/OrganizationThumbnailSet'
+          400:
+            description: Validation error
+    /v1/api/organizations/{id}/ratings:
+      get:
+        description: |
+          Lists all ratings for given organization id
+        parameters:
+          - name: id
+            type: integer
+            in: path
+            required: true
+            description: Organization id. Pass 'my' to get output for logged user.
+        responses:
+          200:
+            description: Successful response
+            schema:
+              $ref: '#/definitions/OrgRatingReadable'
+          404:
+            description: Not found. Given organization id doesn't exist.
+    /v1/api/news/{id}/thumbnail:
+      post:
+        description: |
+          Uploads image for news for given id.
+        parameters:
+          - name: id
+            in: path
+            description: News id
+            required: true
+            type: integer
+          - name: data
+            in: body
+            required: true
+            description: Thumbnail data. Upload file to 'filename' parameter.
+            schema:
+              $ref: '#/definitions/ThumbnailWritable'
+        responses:
+          201:
+            description: Created
+            schema:
+              $ref: '#/definitions/NewsThumbnailSet'
+          310:
+            description: Updated, but organization or volunteer profile not created yet
+            schema:
+              $ref: '#/definitions/NewsThumbnailSet'
+          400:
+            description: Validation error
+    /v1/api/offers/{id}/thumbnail:
+      post:
+        description: |
+          Uploads image for offer for given id. Saves original image and creates thumbnails in different sizes.
+        parameters:
+          - name: id
+            in: path
+            description: Offer id.
+            required: true
+            type: integer
+          - name: data
+            in: body
+            required: true
+            description: Thumbnail data. Upload file to 'filename' parameter.
+            schema:
+              $ref: '#/definitions/ThumbnailWritable'
+        responses:
+          201:
+            description: Created
+            schema:
+              $ref: '#/definitions/OfferThumbnailSet'
+          310:
+            description: Updated, but organization or volunteer profile not created yet
+            schema:
+              $ref: '#/definitions/OfferThumbnailSet'
+          400:
+            description: Validation error
+      put:
+        description: |
+          Replaces thumbnails. Works like in POST method, but additionally removes previous thumbnails
+        parameters:
+          - name: id
+            in: path
+            description: Offer id.
+            required: true
+            type: integer
+          - name: data
+            in: body
+            required: true
+            description: Thumbnail data. Upload file to 'filename' parameter.
+            schema:
+              $ref: '#/definitions/ThumbnailWritable'
+        responses:
+          200:
+            description: Updated
+            schema:
+              $ref: '#/definitions/OfferThumbnailSet'
+          310:
+            description: Updated, but organization or volunteer profile not created yet
+            schema:
+              $ref: '#/definitions/OfferThumbnailSet'
+          400:
+            description: Validation error
+          404:
+            description: Not found
+    /v1/api/promoted-offers:
+      get:
+        description: |
+          Gets 4 recent promoted offers.
+        responses:
+          200:
+            description: Successful response
+            schema:
+              type: array
+              items:
+                $ref: '#/definitions/PromotedOffers'
+          310:
+            description: Organization or volunteer profile not created yet
+            schema:
+              type: array
+              items:
+                $ref: '#/definitions/PromotedOffers'
+    /v1/api/admin-offers:
+      get:
+        description: |
+          Gets offer list for admin use.
+        parameters:
+          - name: publishing_organization
+            type: string
+            in: query
+            required: false
+            description: Pass organization names to filter offers. For several filters use comma-separated format
+          - name: status
+            type: integer
+            in: query
+            required: false
+            description: Pass status ids to filter offers. For several filters use comma-separated format
+        responses:
+          200:
+            description: Successful response
+            schema:
+              type: array
+              items:
+                $ref: '#/definitions/OfferList'
+          310:
+            description: Organization or volunteer profile not created yet
+            schema:
+              type: array
+              items:
+                $ref: '#/definitions/OfferList'
+          403:
+            description: Forbidden
+    /v1/api/offers:
+      get:
+        description: |
+          Gets offer list.
+        parameters:
+          - name: category
+            type: integer
+            in: query
+            required: false
+            description: Pass category id to filter applications. For several filters use comma-separated format
+        responses:
+          200:
+            description: Successful response
+            schema:
+              type: array
+              items:
+                $ref: '#/definitions/OfferList'
+          310:
+            description: Organization or volunteer profile not created yet
+            schema:
+              type: array
+              items:
+                $ref: '#/definitions/OfferList'
+      post:
+        description: |
+          Creates a draft of offer. Only several fields are available to fill in this step. Edit this resource to fill further fields.
+        parameters:
+          - name: data
+            in: body
+            required: true
+            description: Offer data.
+            schema:
+              $ref: '#/definitions/OfferStep1'
+        responses:
+          201:
+            description: Created
+          310:
+            description: Created, but organization or volunteer profile not created yet
+          400:
+            description: Bad request or validation error.
+          403:
+            description: Forbidden. You don't have permissions to do it.
+    /v1/api/offers/search/{phrase}:
+      post:
+        description: |
+          Searches given phrase in current offers (and related organization data)
+        parameters:
+          - name: phrase
+            in: path
+            required: true
+            type: string
+            description: phrase
+        responses:
+          200:
+            description: Success
+            schema:
+              $ref: '#/definitions/OfferList'
+    /v1/api/offers/{id}:
+      get:
+        description: |
+          Gets offer data for given id.
+        parameters:
+          - name: id
+            type: integer
+            in: path
+            required: true
+            description: Offer id
+        responses:
+          200:
+            description: Successful response
+            schema:
+              $ref: '#/definitions/OfferDetail'
+          310:
+            description: Organization or volunteer profile not created yet
+            schema:
+              $ref: '#/definitions/OfferDetail'
+          404:
+            description: Not found
+      patch:
+        description: |
+          Updates offer data for given id. Pass only one body-parameter from listed depending on which fields you
+          want to update.
+        parameters:
+          - name: Step 1
+            in: body
+            required: true
+            description: Offer data. Fields corresponding to Step 1.
+            schema:
+              $ref: '#/definitions/OfferStep1'
+          - name: Step 2
+            in: body
+            required: true
+            description: Offer data. Fields corresponding to Step 2.
+            schema:
+              $ref: '#/definitions/OfferStep2'
+          - name: status
+            in: body
+            required: true
+            description: Change status of offer.
+            schema:
+              $ref: '#/definitions/OfferChangeStatus'
+          - name: agreement
+            in: body
+            required: true
+            description: Offer data. Fields involving agreement details.
+            schema:
+              $ref: '#/definitions/OfferAgreement'
+        responses:
+          201:
+            description: Update
+          310:
+            description: Updated, but organization or volunteer profile not created yet
+          400:
+            description: Bad request or validation error.
+          403:
+            description: Forbidden. You don't have permissions to do it.
+      delete:
+        description: |
+          Deactivates offer for given id. Alias for changing offer's 'status' to 4 (removed). Pass empty body.
+        parameters:
+          - name: id
+            type: integer
+            in: path
+            required: true
+            description: Offer id.
+        responses:
+          201:
+            description: Deactivated
+          310:
+            description: Deactivated, but organization or volunteer profile not created yet
+          400:
+            description: Bad request.
+          403:
+            description: Forbidden. Bad credentials.
+    /v1/api/users:
+      post:
+        description: |
+          Registers an account. This account needs to be complemented of organization or volunteer profile.
+        parameters:
+          - name: data
+            in: body
+            required: true
+            description: Account data.
+            schema:
+              $ref: '#/definitions/UserCreate'
+        responses:
+          201:
+            description: Created
+          400:
+            description: Bad request or validation error.
+      patch:
+        description: |
+          Updates user data for given id. Involves primary data belonging to both organization member and volunteer.
+        parameters:
+          - name: data
+            in: body
+            required: true
+            description: User data.
+            schema:
+              $ref: '#/definitions/UserEdit'
+        responses:
+          201:
+            description: Updated
+          310:
+            description: Updated, but organization or volunteer profile not created yet
+          400:
+            description: Bad request or validation error.
+          403:
+            description: Forbidden. You don't have permissions to do it.
+    /v1/api/users/activate/{activation_key}:
+      get:
+        description: |
+          Activates an account.
+        parameters:
+          - name: activation_key
+            in: path
+            required: true
+            description: Activation key
+            type: string
+        responses:
+          200:
+            description: Activation succeed
+          400:
+            description: Activation failed
+    /v1/api/abilities:
+      get:
+        description: |
+          Gets ability list
+        responses:
+          200:
+            description: Successful response
+            schema:
+              type: array
+              items:
+                $ref: '#/definitions/Ability'
+          403:
+            description: Forbidden. You don't have permissions to do it.
+    /v1/api/education:
+      get:
+        description: |
+          Gets education list
+        responses:
+          200:
+            description: Successful response
+            schema:
+              type: array
+              items:
+                $ref: '#/definitions/Education'
+          403:
+            description: Forbidden. You don't have permissions to do it.
+    /v1/api/countries:
+      get:
+        description: |
+          Gets country list
+        responses:
+          200:
+            description: Successful response
+            schema:
+              type: array
+              items:
+                $ref: '#/definitions/Country'
+    /v1/api/organization-types:
+      get:
+        description: |
+          Gets ability list
+        responses:
+          200:
+            description: Successful response
+            schema:
+              type: array
+              items:
+                $ref: '#/definitions/OrganizationType'
+          403:
+            description: Forbidden. You don't have permissions to do it.
+    /v1/api/categories:
+      get:
+        description: |
+          Gets category list
+        responses:
+          200:
+            description: Successful response
+            schema:
+              type: array
+              items:
+                $ref: '#/definitions/Category'
+          403:
+            description: Forbidden. You don't have permissions to do it.
+    /v1/api/session:
+      get:
+        description: |
+          Gets some useful information about logged user.
+        responses:
+          200:
+            description: Successful response
+            schema:
+              $ref: '#/definitions/SessionReadable'
+          310:
+            description: Success, but organization or volunteer profile not created yet
+          404:
+            description: You are not logged in.
+      post:
+        description: |
+          Signs user in.
+        parameters:
+          - name: auth
+            in: body
+            required: true
+            description: Username-Password pair
+            schema:
+              $ref: '#/definitions/SessionWritableRequest'
+        responses:
+          201:
+            description: Logged in.
+            schema:
+              $ref: '#/definitions/SessionWritableResponse'
+          400:
+            description: Bad request or validation error.
+    /v1/api/settings:
+      get:
+        description: |
+          Gets list of settings with values
+        responses:
+          200:
+            description: Successful response
+            schema:
+              $ref: '#/definitions/SettingsList'
+          403:
+            description: Forbidden. You don't have permissions to do it.
+    /v1/api/settings/{setting_key}:
+      get:
+        description: |
+          Gets single key-value pair for given setting
+        parameters:
+          - name: setting_key
+            in: path
+            required: true
+            description: Key for which you want to get value
+            type: string
+        responses:
+          200:
+            description: Successful response
+            schema:
+              $ref: '#/definitions/SettingsDetail'
+          403:
+            description: Forbidden. You don't have permissions to do it.
+          404:
+            description: Not found
+      put:
+        description: |
+          Updates key-value pair if exists. Otherwise, creates one.
+        parameters:
+          - name: setting_key
+            in: path
+            required: true
+            description: Key for which you want to set value
+            type: string
+          - name: value
+            in: body
+            required: true
+            description: Value for given key
+            schema:
+              $ref: '#/definitions/SettingsUpdate'
+        responses:
+          201:
+            description: Set
+          403:
+            description: Forbidden. You don't have permissions to do it.
+    /v1/api/ratings:
+      post:
+        description: |
+          Rates volunteer or organization for relevant offer
+        parameters:
+          - name: volunteer
+            in: body
+            required: true
+            description: Rate volunteer for given offer
+            schema:
+              $ref: '#/definitions/RatingWritable'
+          - name: organization
+            in: body
+            required: true
+            description: Rate organization for given offer
+            schema:
+              $ref: '#/definitions/OrgRatingWritable'
+        responses:
+          201:
+            description: Created
+          310:
+            description: Created, but organization or volunteer profile not created yet
+          400:
+            description: Bad request
+          403:
+            description: Forbidden
+          417:
+            description: Not expected fail
+      patch:
+        description: |
+          Publish/unpublish testimonial
+        parameters:
+          - name: volunteer
+            in: body
+            required: true
+            description: Publish volunteer testimonial
+            schema:
+              $ref: '#/definitions/RatingPublish'
+          - name: organization
+            in: body
+            required: true
+            description: Publish organization testimonial
+            schema:
+              $ref: '#/definitions/OrgRatingPublish'
+        responses:
+          201:
+            description: Updated
+          310:
+            description: Updated, but organization or volunteer profile not created yet
+          400:
+            description: Bad request
+          404:
+            description: Not found
+    /v1/api/metrics:
+      get:
+        description: |
+          Lists all metrics
+        responses:
+          200:
+            description: Successful response
+            schema:
+              $ref: '#/definitions/MetricsReadable'
+          310:
+            description: Organization or volunteer profile not created
+            schema:
+              $ref: '#/definitions/MetricsReadable'
+          403:
+            description: Forbidden
+
+  definitions:
+    Thumbnail:
+      properties:
+        filename:
+          type: string
+        id:
+          type: integer
+    OrganizationReadable:
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+        fullname:
+          type: string
+        shortname:
+          type: string
+        street:
+          type: string
+        house_number:
+          type: string
+        apartment_number:
+          type: string
+        zipcode:
+          type: string
+        district:
+          type: string
+        city:
+          type: string
+        province:
+          type: string
+        country:
+          type: string
+        nip:
+          type: string
+        krs:
+          type: string
+        phonenumber:
+          type: string
+        description:
+          type: string
+        is_active:
+          type: boolean
+        thumbnail_relation:
+          $ref: '#/definitions/Thumbnail'
+    OrganizationWritable:
+      properties:
+        type:
+          type: integer
+          description: id of organization type
+        fullname:
+          type: string
+        shortname:
+          type: string
+        street:
+          type: string
+        house_number:
+          type: string
+        apartment_number:
+          type: string
+        zipcode:
+          type: string
+        district:
+          type: string
+        city:
+          type: string
+        province:
+          type: string
+        country:
+          type: string
+          description: two-character identifier of country e.g. "PL"
+        nip:
+          type: string
+          description: required depending on the choosen organization type
+        krs:
+          type: string
+          description: required depending on the choosen organization type
+        phonenumber:
+          type: string
+        description:
+          type: string
+    OrganizationUpdateDataChange:
+      properties:
+        coordinator:
+          type: integer
+          description: id of
+        type:
+          type: integer
+          description: id of organization type
+        fullname:
+          type: string
+        shortname:
+          type: string
+        street:
+          type: string
+        house_number:
+          type: string
+        apartment_number:
+          type: string
+        zipcode:
+          type: string
+        district:
+          type: string
+        city:
+          type: string
+        province:
+          type: string
+        country:
+          type: string
+          description: two-character identifier of country e.g. "PL"
+        nip:
+          type: string
+          description: required depending on the choosen organization type
+        krs:
+          type: string
+          description: required depending on the choosen organization type
+        phonenumber:
+          type: string
+        description:
+          type: string
+    OrganizationUpdateStatusChange:
+      properties:
+        is_active:
+          type: boolean
+    ApplicationWritable:
+      properties:
+        offer:
+          type: integer
+          description: offer id
+        id:
+          type: integer
+        status:
+          type: integer
+          description: 0 - pending to review, 1 - accepted, 2 - rejected
+        created_at:
+          type: string
+          format: dateTime
+    ApplicationReadable:
+      properties:
+        offer:
+          type: integer
+          description: offer id
+        volunteer:
+          type: integer
+          description: volunteer id
+        status:
+          type: integer
+          description: 0 - pending to review, 1 - accepted, 2 - rejected
+        message:
+          type: string
+          description: reason for rejection (required) or message for volunteer for acceptance (optional)
+    ApplicationStatusChange:
+      properties:
+        id:
+          type: array
+          description: list of ids for which you change status
+          items:
+            id:
+              type: integer
+              description: id of application
+        status:
+          type: integer
+          description: 0 - pending to review, 1 - accepted, 2 - rejected
+        message:
+          type: string
+          description: reason for rejection (required) or message for volunteer for acceptance (optional)
+    ApplicationStatusChangeResponse:
+      properties:
+        "1..n":
+          type: object
+          description: response for application id (1..n)
+          properties:
+            id:
+              type: integer
+              description: id of application
+            status:
+              type: integer
+              description: 0 - pending to review, 1 - accepted, 2 - rejected
+            message:
+              type: string
+              description: reason for rejection (required) or message for volunteer for acceptance (optional)
+            volunteer:
+              type: integer
+              description: volunteer id
+            offer:
+              type: integer
+              description: offer id
+            created_at:
+              type: string
+              description: dateTime
+    VolunteerApplications:
+      properties:
+        created_at:
+          type: string
+          format: dateTime
+        status:
+          type: integer
+          description: 0 - pending to review, 1 - accepted, 2 - rejected
+        title:
+          type: string
+          description: title of offer
+        organization_fullname:
+          type: string
+          description: name of offer's publishing organization
+        publish_from:
+          type: string
+          format: dateTime
+          description: time since the offer has been published
+    VolunteerPrimaryWritable:
+      properties:
+        education:
+          type: integer
+          description: id of education
+        abilities:
+          type: array
+          items:
+            ability:
+              type: integer
+              description: id of ability
+        birthday:
+          type: string
+          format: date
+        gender:
+          type: integer
+          description: 0 - not specified, 1 - male, 2 - female
+        phonenumber:
+          type: string
+        about:
+          type: string
+    VolunteerExtendedWritable:
+      properties:
+        pesel:
+          type: string
+        street:
+          type: string
+        house_number:
+          type: string
+        apartment_number:
+          type: string
+        zipcode:
+          type: string
+        city:
+          type: string
+        country:
+          type: string
+          description: two-character identifier of country e.g. "PL"
+        proof_number:
+          type: string
+        proof_type:
+          type: IDENTITY_CARD = 0, SCHOOL_CARD = 1, HIGHSCHOOL_CARD = 2, PASSPORT = 3
+    VolunteerReadable:
+      properties:
+        username:
+          type: string
+          description: login
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        thumbnail_relation:
+          $ref: '#/definitions/Thumbnail'
+        education:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: id of education
+            name:
+              type: string
+        abilities:
+          type: array
+          items:
+            ability:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  description: id of ability
+                name:
+                  type: string
+        id:
+          type: integer
+        birthday:
+          type: string
+          format: date
+        gender:
+          type: integer
+          description: 0 - not specified, 1 - male, 2 - female
+        phonenumber:
+          type: string
+        about:
+          type: string
+    ThumbnailWritable:
+      properties:
+        filename:
+          type: string
+        description:
+          type: string
+    OrganizationThumbnailReadable:
+      properties:
+        filename:
+          type: string
+          description: URL to thumbnail
+        organization:
+          type: integer
+          description: id of organization
+        id:
+          type: integer
+          description: id of thumbnail
+        description:
+          type: string
+    OrganizationThumbnailSet:
+      properties:
+        original:
+          $ref: '#/definitions/OrganizationThumbnailReadable'
+        thumbnail:
+          $ref: '#/definitions/OrganizationThumbnailReadable'
+    VolunteerThumbnailReadable:
+      properties:
+        filename:
+          type: string
+          description: URL to thumbnail
+        volunteer:
+          type: integer
+          description: id of volunteer
+        id:
+          type: integer
+          description: id of thumbnail
+        description:
+          type: string
+    VolunteerThumbnailSet:
+      properties:
+        original:
+          $ref: '#/definitions/VolunteerThumbnailReadable'
+        thumbnail:
+          $ref: '#/definitions/VolunteerThumbnailReadable'
+    NewsThumbnailReadable:
+      properties:
+        filename:
+          type: string
+          description: URL to thumbnail
+        organization:
+          type: integer
+          description: id of news
+        id:
+          type: integer
+          description: id of thumbnail
+        description:
+          type: string
+    NewsThumbnailSet:
+      properties:
+        thumbnail:
+          $ref: '#/definitions/NewsThumbnailReadable'
+    OfferThumbnailReadable:
+      properties:
+        filename:
+          type: string
+          description: URL to thumbnail
+        offer:
+          type: integer
+          description: id of offer
+        id:
+          type: integer
+          description: id of thumbnail
+        description:
+          type: string
+    OfferThumbnailSet:
+      properties:
+        original:
+          $ref: '#/definitions/OfferThumbnailReadable'
+        large:
+          $ref: '#/definitions/OfferThumbnailReadable'
+        small:
+          $ref: '#/definitions/OfferThumbnailReadable'
+        promoted:
+          $ref: '#/definitions/OfferThumbnailReadable'
+    PromotedOffers:
+      properties:
+        id:
+          type: integer
+          description: id of offer
+        title:
+          type: string
+        promoted_thumbnail_relation:
+          $ref: '#/definitions/OfferThumbnailReadable'
+        publishing_organization:
+          type: string
+          description: name of publishing organization
+        volunteers_joined_count:
+          type: integer
+        volunteer_max_count:
+          type: integer
+    Category:
+      properties:
+        id:
+          type: integer
+          description: id of category
+        name:
+          type: string
+    OfferList:
+      properties:
+        id:
+          type: integer
+          description: id of offer
+        title:
+          type: string
+        small_thumbnail_relation:
+          $ref: '#/definitions/OfferThumbnailReadable'
+        category:
+          type: array
+          items:
+            $ref: '#/definitions/Category'
+        publishing_organization:
+          $ref: '#/definitions/OrganizationReadable'
+        volunteers_joined_count:
+          type: integer
+        volunteer_max_count:
+          type: integer
+        remaining_time:
+          type: string
+          description: remaining time to the end of the offer
+        status:
+          type: integer
+          description: |
+            0 - draft, 1 - in review, 2 - published, 3 - published and edited, 4 - depublished, 5 - removed, 6 - removed
+        publish_to:
+          type: string
+          format: dateTime
+        publish_from:
+          type: string
+          format: dateTime
+    OfferDetail:
+      properties:
+        id:
+          type: integer
+          description: id of offer
+        title:
+          type: string
+        large_thumbnail_relation:
+          $ref: '#/definitions/OfferThumbnailReadable'
+        category:
+          type: array
+          items:
+            $ref: '#/definitions/Category'
+        publishing_organization:
+          $ref: '#/definitions/OrganizationReadable'
+        volunteers_joined_count:
+          type: integer
+        volunteer_max_count:
+          type: integer
+        remaining_time:
+          type: string
+          description: remaining time to the end of the offer
+        publish_to:
+          type: string
+          format: dateTime
+        publish_from:
+          type: string
+          format: dateTime
+        description:
+          type: string
+        description_problem:
+          type: string
+        description_requirements:
+          type: string
+        description_quests:
+          type: string
+        description_benefits:
+          type: string
+        description_time:
+          type: string
+        description_additional_requirements:
+          type: string
+        is_current:
+          type: boolean
+          description: true whether the offer has started but not ended
+        localization:
+          type: string
+    OfferStep1:
+      properties:
+        title:
+          type: string
+        category:
+          type: array
+          items:
+            type: integer
+            description: id of category
+        volunteer_max_count:
+          type: integer
+        publish_to:
+          type: string
+          format: dateTime
+        publish_from:
+          type: string
+          format: dateTime
+        description:
+          type: string
+        description_problem:
+          type: string
+        description_quests:
+          type: string
+        description_time:
+          type: string
+        localization:
+          type: string
+    OfferStep2:
+      properties:
+        description_requirements:
+          type: string
+        description_benefits:
+          type: string
+        description_additional_requirements:
+          type: string
+    OfferChangeStatus:
+      properties:
+        status:
+          type: integer
+          description: |
+            0 - draft, 1 - in review, 2 - published, 3 - published and edited, 4 - depublished, 5 - removed, 6 - removed
+        status_change_reason:
+          type: string
+          description: |
+            reason if changing status to rejected or depublished
+    UserCreate:
+      properties:
+        email:
+          type: string
+        username:
+          type: string
+        password:
+          type: string
+    UserEdit:
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+    Ability:
+      properties:
+        id:
+          type: integer
+          description: id of ability
+        name:
+          type: string
+    OrganizationType:
+      properties:
+        id:
+          type: integer
+          description: id of organization type
+        name:
+          type: string
+        is_krs_required:
+          type: boolean
+        is_nip_required:
+          type: boolean
+    Education:
+      properties:
+        id:
+          type: integer
+          description: id of education
+        name:
+          type: string
+    SessionWritableResponse:
+      properties:
+        organization_id:
+          type: integer
+          description: null if user does not belong to any organization
+        is_organization:
+          type: boolean
+          description: Does user belong to any organization?
+        token:
+          type: string
+          description: Token required in token-based authorization
+        volunteer_id:
+          type: integer
+          description: null if user is not a volunteer
+        is_volunteer:
+          type: boolean
+          description: Does user is volunteer?
+    SessionWritableRequest:
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    SessionReadable:
+      properties:
+        last_login:
+          type: string
+          format: dateTime
+        username:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        is_active:
+          type: boolean
+          description: Is email activated?
+        date_joined:
+          type: string
+          format: dateTime
+    Country:
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+    SettingsList:
+      properties:
+        settings:
+          type: object
+          properties:
+            key:
+              type: string
+              description: value
+    SettingsDetail:
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+    SettingsUpdate:
+      properties:
+        value:
+          type: string
+    OrganizationOffers:
+      properties:
+        id:
+          type: integer
+          description: id of offer
+        title:
+          type: string
+        category:
+          type: array
+          items:
+            $ref: '#/definitions/Category'
+        publish_from:
+          type: string
+          format: dateTime
+        publish_to:
+          type: string
+          format: dateTime
+        volunteers_joined_count:
+          type: integer
+        volunteers_accepted_count:
+          type: integer
+        volunteers_rejected_count:
+          type: integer
+    ApplicationForOfferReadable:
+      properties:
+        status:
+          type: integer
+          description: 0 - pending to review, 1 - accepted, 2 - rejected
+        volunteer:
+          type: object
+          properties:
+            abilities:
+              type: array
+              items:
+                - ability:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        name: string
+            first_name:
+              type: string
+            last_name:
+              type: string
+        created_at:
+          type: string
+          format: dateTime
+    AgreementTaskWritable:
+      properties:
+        offer:
+          type: integer
+          description: offer id
+        volunteer:
+          type: integer
+          description: volunteer id. Not required
+        body:
+          type: string
+          description: tasks list
+    VolunteerAbilities:
+      properties:
+        id:
+          type: integer
+          description: ability id
+        name:
+          type: string
+        choosen:
+          type: boolean
+          description: Has volunteer marked this ability as his?
+    RatingWritable:
+      properties:
+        volunteer:
+          type: integer
+          description: volunteer id
+        offer:
+          type: integer
+          description: offer id
+        testimonial:
+          type: string
+          description: optional
+        abilities:
+          type: array
+          items:
+            ability:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  description: ability id
+                rating:
+                  type: integer
+    OrgRatingWritable:
+      properties:
+        organization:
+          type: integer
+          description: organization id
+        offer:
+          type: integer
+          description: offer id
+        testimonial:
+          type: string
+          description: optional
+        abilities:
+          type: array
+          items:
+            ability:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  description: ability id
+                rating:
+                  type: integer
+    AgreementWritable:
+      properties:
+        id:
+          type: integer
+          description: agreement id
+        volunteer:
+          type: integer
+          description: volunteer id
+        template:
+          type: integer
+          description: template id
+        not_signed_resource:
+          type: string
+          description: path to resource or null
+        volunteer_signed_resource:
+          type: string
+          description: path to resource or null. FEATURE DISABLED
+        organization_signed_resource:
+          type: string
+          description: path to resource or null. FEATURE DISABLED
+        status:
+          type: integer
+          description: 0 - NOT_SIGNED, 1 - SIGNED_BY_ORGANIZATION, 2 - SIGNED_BY_VOLUNTEER, 3 - SIGNED_BY_BOTH
+        created_at:
+          type: string
+          format: dateTime
+    AgreementZipRequest:
+      properties:
+        offer:
+          type: integer
+          description: offer id
+        volunteers:
+          type: array
+          description: optional
+          items:
+            volunteer:
+              type: integer
+              description: volunteer id
+    AgreementZip:
+      properties:
+        filename:
+          type: string
+          description: path to resource
+    OfferAgreement:
+      properties:
+        agreement_stands_from:
+          type: string
+          format: dateTime
+        agreement_stands_to:
+          type: string
+          format: dateTime
+        agreement_signatories:
+          type: array
+          items:
+            signatory:
+              type: integer
+              description: signatory id
+    VolunteerAutoskip:
+      properties:
+        can_autoskip:
+          type: boolean
+    NewsWritable:
+      properties:
+        title:
+          type: string
+        body:
+          type: string
+    NewsReadable:
+      properties:
+        title:
+          type: string
+        body:
+          type: string
+        news_thumbnail:
+          $ref: '#/definitions/NewsThumbnailReadable'
+        created_at:
+          type: string
+          format: dateTime
+        last_modified_at:
+          type: string
+          format: dateTime
+        created_by:
+          type: integer
+          description: user id
+        last_modified_by:
+          type: integer
+          description: user id
+    MetricsReadable:
+      properties:
+        slug:
+          type: string
+          description: key
+        current_value:
+          type: string
+          description: in double format
+    RatingReadable:
+      properties:
+        volunteer:
+          type: integer
+          description: volunteer id
+        offer:
+          type: integer
+          description: offer id
+        created_by:
+          type: integer
+          description: user id
+        rating:
+          type: integer
+          description: average rating
+        testimonial:
+          type: string
+    OrgRatingReadable:
+      properties:
+        organization:
+          type: integer
+          description: organization id
+        offer:
+          type: integer
+          description: offer id
+        created_by:
+          type: integer
+          description: user id
+        rating:
+          type: integer
+          description: average rating
+        testimonial:
+          type: string
+    AgreementTemplate:
+      properties:
+        body:
+          type: string
+        offer:
+          type: integer
+          description: pass offer id if specific template or skip this field to create organization template
+    RatingPublish:
+      properties:
+        volunteer:
+          type: integer
+          description: volunteer id
+        offer:
+          type: integer
+          description: offer id
+        is_public:
+          type: boolean
+    OrgRatingPublish:
+      properties:
+        organization:
+          type: integer
+          description: organization id
+        offer:
+          type: integer
+          description: offer id
+        is_public:
+          type: boolean
+    VolunteerList:
+      properties:
+        id:
+          type: integer
+          description: volunteer id
+        pesel:
+          type: integer
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        applications:
+          type: integer
+          description: count of applications
+        applications_in_review:
+          type: integer
+          description: count of applications not submited yet
+        applications_rejected:
+          type: integer
+          description: count of applications rejected
+        thumbnail_relation:
+          $ref: '#/definitions/Thumbnail'
+    OrganizationList:
+      properties:
+        id:
+          type: integer
+          description: organization id
+        fullname:
+          type: string
+        thumbnail_relation:
+          $ref: '#/definitions/Thumbnail'
+        offers_active_count:
+          type: integer
+    OfferBulkStatusChange:
+      properties:
+        ids:
+          type: array
+          items:
+            id:
+              type: integer
+              description: offer id
+        status:
+          type: integer
+          description: |
+            0 - draft, 1 - in review, 2 - published, 3 - published and edited, 4 - depublished, 5 - removed, 6 - removed
+    OfferBulkStatusChangeResponse:
+      properties:
+        "1..n":
+          type: object
+          description: response for offer id (1..n)
+          properties:
+            id:
+              type: integer
+              description: id of offer
+            title:
+              type: string
+            large_thumbnail_relation:
+              $ref: '#/definitions/OfferThumbnailReadable'
+            category:
+              type: array
+              items:
+                $ref: '#/definitions/Category'
+            publishing_organization:
+              $ref: '#/definitions/OrganizationReadable'
+            volunteers_joined_count:
+              type: integer
+            volunteer_max_count:
+              type: integer
+            remaining_time:
+              type: string
+              description: remaining time to the end of the offer
+            publish_to:
+              type: string
+              format: dateTime
+            publish_from:
+              type: string
+              format: dateTime
+            description:
+              type: string
+            description_problem:
+              type: string
+            description_requirements:
+              type: string
+            description_quests:
+              type: string
+            description_benefits:
+              type: string
+            description_time:
+              type: string
+            description_additional_requirements:
+              type: string
+            is_current:
+              type: boolean
+              description: true whether the offer has started but not ended
+            localization:
+              type: string
